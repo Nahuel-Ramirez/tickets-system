@@ -1,7 +1,6 @@
 from fastapi import FastAPI
+from app.routes import tickets
 
 app = FastAPI()
 
-@app.get("/")
-def leer_inicio():
-    return {"mensaje": "Hola Nahuel, FastAPI funcionando correctamente."}
+app.include_router(tickets.router)
