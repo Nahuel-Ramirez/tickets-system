@@ -24,6 +24,9 @@ engine = create_engine(DATABASE_URL)
 
 #Creamos la sesion de base de datos
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-#Base para los modelos
 Base = declarative_base()
+
+#Crear tablas
+def create_tables():
+    from app.models import ticket
+    Base.metadata.create_all(bind=engine)
