@@ -10,4 +10,11 @@ class TicketOut(BaseModel):
     dias_atraso: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+#Define que campos esperamos obtener cuando alguien crea un ticket
+class TicketCreate(BaseModel):
+    titulo: str
+    descripcion: str
+    area: str

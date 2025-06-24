@@ -24,11 +24,8 @@ class Ticket(Base):
     descripcion = Column(String, nullable=False)
     area = Column(String, nullable=False)
     estado = Column(String, default="Pendiente")
-    solicitante = Column(String, nullable=False)
+    solicitante = Column(String, nullable=False, default="Desconocido")
     fecha_creacion = Column(DateTime, default=datetime.now)
-    prioridad = Column(String, nullable=False)
+    prioridad = Column(String, nullable=False, default="Baja")
     comentario_interno = Column(Text, nullable=True)
 
-@hybrid_property
-def dias_atraso(self):
-    return (datetime.now() - self.fecha_creacion).days
