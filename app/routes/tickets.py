@@ -8,6 +8,7 @@ from app.schemas.ticket import TicketOut, TicketCreate
 from datetime import datetime
 from app.schemas import ticket as schemas
 from app.schemas import ticket_update as schema_ticketupdate
+from fastapi.responses import JSONResponse
 from typing import List
 
 
@@ -81,7 +82,7 @@ def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
     db.add(nuevo_ticket)
     db.commit()
     db.refresh(nuevo_ticket)
-    return nuevo_ticket
+    return to_ticket_out(nuevo_ticket)
 
 
 #Creamos la ruta /ticket/{id} para actualizar parcialmente el ticket.
@@ -97,3 +98,14 @@ def update_ticket(ticket_id: int, ticket_update: schema_ticketupdate.TicketUpdat
     db.commit()
     db.refresh(ticket)
     return to_ticket_out(ticket)
+
+#Creamos la ruta /tickets/{ticket_id} para eliminar tickets con metodo DELETE
+@router.delete("/tickets/{ticket_id}")
+def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
+    ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket no encontrado")
+    
+    db.delete(ticket)
+    db.commit()
+    return JSONResponse(content={"mensaje": f"Ticket con ID {ticket_id} eliminado correctamente"}, status_code=200)
