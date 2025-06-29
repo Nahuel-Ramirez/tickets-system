@@ -1,8 +1,7 @@
 #Creacion del modelo de la base de datos.
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 import os
 
@@ -28,5 +27,5 @@ Base = declarative_base()
 
 #Crear tablas
 def create_tables():
-    from app.models import ticket
+    import app.models
     Base.metadata.create_all(bind=engine)
