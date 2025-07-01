@@ -10,6 +10,8 @@ from app.schemas import ticket as schemas
 from app.schemas import ticket_update as schema_ticketupdate
 from fastapi.responses import JSONResponse
 from app.utils.ticket_utils import to_ticket_out
+from app.auth.dependencies import is_admin, is_operador
+from app.models.usuario import Usuario
 from typing import List
 
 
@@ -56,7 +58,7 @@ def get_ticket_by_id(ticket_id: int, db: Session = Depends(get_db)):
 
 #Creamos la ruta /tickets para crear un nuevo ticket (metodo POST)
 @router.post("/tickets", response_model=TicketOut)
-def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
+def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db), user: Usuario = Depends(is_operador)):
     nuevo_ticket = Ticket(
         titulo=ticket.titulo,
         descripcion=ticket.descripcion,
@@ -70,7 +72,7 @@ def create_ticket(ticket: TicketCreate, db: Session = Depends(get_db)):
 
 #Creamos la ruta /ticket/{id} para actualizar parcialmente el ticket.
 @router.patch("/tickets/{ticket_id}", response_model=schemas.TicketOut)
-def update_ticket(ticket_id: int, ticket_update: schema_ticketupdate.TicketUpdate, db: Session = Depends(get_db)):
+def update_ticket(ticket_id: int, ticket_update: schema_ticketupdate.TicketUpdate, db: Session = Depends(get_db), user: Usuario = Depends(is_operador)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado")
@@ -84,7 +86,7 @@ def update_ticket(ticket_id: int, ticket_update: schema_ticketupdate.TicketUpdat
 
 #Creamos la ruta /tickets/{ticket_id} para eliminar tickets con metodo DELETE
 @router.delete("/tickets/{ticket_id}")
-def delete_ticket(ticket_id: int, db: Session = Depends(get_db)):
+def delete_ticket(ticket_id: int, db: Session = Depends(get_db), user: Usuario = Depends(is_admin)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if not ticket:
         raise HTTPException(status_code=404, detail="Ticket no encontrado")
